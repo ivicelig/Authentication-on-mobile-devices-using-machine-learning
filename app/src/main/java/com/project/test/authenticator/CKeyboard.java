@@ -10,6 +10,14 @@ import android.view.View;
 import android.view.inputmethod.InputConnection;
 import android.widget.Toast;
 
+import com.project.test.authenticator.database.Data;
+
+import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.Vector;
 
 public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyboardActionListener{
@@ -17,20 +25,26 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
     private Keyboard keyboard;
     private boolean isCaps = false;
 
-    Vector<Long> press = new Vector<>();
-    Vector<Long> release = new Vector<>();
-    Vector<Long> diffPr2Pr1 = new Vector<>();
-    Vector<Long> diffPr2re1 = new Vector<>();
-    Vector<Long> diffRe2Re1 = new Vector<>();
-    Vector<Long> period = new Vector<>();
+    List<Long> press = new ArrayList<>();
+    List<Long> release = new ArrayList<>();
+    List<Long> diffPr2Pr1 = new ArrayList<>();
+    List<Long> diffPr2re1 = new ArrayList<>();
+    List<Long> diffRe2Re1 = new ArrayList<>();
+    List<Long> period = new ArrayList<>();
+    List<Long> listData = new ArrayList<>();
 
     @Override
     public View onCreateInputView() {
+
+        FlowManager.init(this);
+
         kv = (KeyboardView)getLayoutInflater().inflate(R.layout.keyboard,null);
         keyboard = new Keyboard(this,R.xml.keyboard);
         kv.setKeyboard(keyboard);
         kv.setOnKeyboardActionListener(this);
         return kv;
+
+
     }
 
     public CKeyboard() {
@@ -39,18 +53,56 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
 
     @Override
     public void onPress(int i) {
-        Long curretSystemTime = System.currentTimeMillis();
-        press.add(curretSystemTime);
-        Log.i("Press event","Current time: "+Long.toString(curretSystemTime));
+        if (i != KeyEvent.KEYCODE_D && i != KeyEvent.KEYCODE_C) {
+            Long curretSystemTime = System.currentTimeMillis();
+            press.add(curretSystemTime);
+
+            Log.i("Press event", "Current time: " + Long.toString(curretSystemTime));
+
+
+
+        }
+        else {
+            Log.i("KEYCODE_ON_PRESS", "SPACE OR ENTER");
+
+
+        }
+
     }
+
+
 
 
     @Override
     public void onRelease(int i) {
-        Long curretSystemTime = System.currentTimeMillis();
-        release.add(curretSystemTime);
-        Log.i("Release event","Current time: "+Long.toString(curretSystemTime));
+        if (i != KeyEvent.KEYCODE_D && i != KeyEvent.KEYCODE_C) {
+            Long curretSystemTime = System.currentTimeMillis();
+            release.add(curretSystemTime);
+
+            Log.i("Release event", "Current time: " + Long.toString(curretSystemTime));
+
+
+        }else {
+            Log.i("KEYCODE_ON_RELEASE", "SPACE OR ENTER");
+            fillDataListWithData();
+            Data data = new Data(UUID.randomUUID(), listData.toString(), listData.size());
+            data.save();
+            cleanLists();
+            List<Data> dataDB = SQLite.select()
+                    .from(Data.class)
+
+                    .queryList();
+
+            for (Data a:dataDB
+                 ) {
+                Log.i("DATA_DATABASE_NUMBER", Integer.toString(a.getNumOfLetters()));
+                Log.i("DATA_DATABASE", a.getDataArray());
+            }
+
+        }
     }
+
+
 
     @Override
     public void onKey(int i, int[] ints) {
@@ -126,4 +178,26 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
     public void swipeUp() {
 
     }
+    private double[] normalizeData(double[] data){
+        return null;
+    }
+    private void cleanLists() {
+        press.clear();
+        release.clear();
+        diffPr2Pr1.clear();
+        diffPr2re1.clear();
+        diffRe2Re1.clear();
+        period.clear();
+        listData.clear();
+    }
+
+    private void fillDataListWithData() {
+        listData.addAll(press);
+        listData.addAll(release);
+        listData.addAll(diffPr2Pr1);
+        listData.addAll(diffPr2re1);
+        listData.addAll(diffRe2Re1);
+        listData.addAll(period);
+    }
 }
+
