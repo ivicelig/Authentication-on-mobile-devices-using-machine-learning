@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.project.test.authenticator.database.Data;
 
+import com.project.test.authenticator.database.DataController;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
@@ -33,9 +34,13 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
     List<Long> diffPr2re1 = new ArrayList<>();
     List<Long> diffRe2Re1 = new ArrayList<>();
     List<Long> period = new ArrayList<>();
+
     int numOfLetters = 0;
+    int failedAuthentications = 0;
+    int numAllowedErrors = 4;
+    String emailAddress = "ivicelig@gmail.com";
 
-
+    DataController dataController = new DataController();
     @Override
     public View onCreateInputView() {
 
@@ -46,7 +51,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
         kv.setKeyboard(keyboard);
         kv.setOnKeyboardActionListener(this);
         return kv;
-        
+
     }
 
     public CKeyboard() {
@@ -82,35 +87,33 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
         }else {
             Log.i("KEYCODE_ON_RELEASE", "SPACE OR ENTER");
 
-            if (numOfLetters >= 2) {
+            if (numOfLetters >= 2 && numOfLetters <= 21) {
                 for (int b = 1;b<numOfLetters;b++ ){
                     diffPr2Pr1.add(press.get(b)-press.get(b-1));
                     diffPr2re1.add(press.get(b)-release.get(b-1));
                     diffRe2Re1.add(release.get(b)-release.get(b-1));
                     period.add(release.get(b-1)-press.get(b-1));
                 }
-                //Save to database if spacebar or done is pressed
-                Data data = new Data(UUID.randomUUID(), diffPr2Pr1.toString(), diffPr2re1.toString(), diffPr2Pr1.toString(), period.toString(), press.size());
-                data.save();
+                //Authenticate user
+                if (authenticateUser(numOfLetters)) {
+                    //Save to database if spacebar or done is pressed and if user is authenticated
+                    dataController.saveToTable(diffPr2Pr1, diffPr2re1, diffRe2Re1, period, numOfLetters);
+                    failedAuthentications = 0;
+                }else {
+                    if (++failedAuthentications >= numAllowedErrors){
+                        //Send mail with logs
+                        sendMail(emailAddress);
+
+                        failedAuthentications = 0;
+                    }
+
+                }
             }
 
             cleanLists();
             numOfLetters = 0;
 
-            //Logs
-            List<Data> dataDB = SQLite.select()
-                    .from(Data.class)
 
-                    .queryList();
-
-            for (Data a:dataDB
-                 ) {
-                Log.i("DATA_DATABASE_NUMBER", Integer.toString(a.getNumOfLetters()));
-                Log.i("DATA_DATABAS_NUMBER",a.getDiffPr2Pr1());
-                Log.i("DATA_DATABASE",a.getDiffPr2Re1());
-                Log.i("DATA_DATABASE",a.getDiffPr2Pr1());
-                Log.i("DATA_DATABASE",a.getPeriod());
-            }
 
         }
     }
@@ -192,9 +195,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
     public void swipeUp() {
 
     }
-    private double[] normalizeData(double[] data){
-        return null;
-    }
+
     private void cleanLists() {
         press.clear();
         release.clear();
@@ -205,6 +206,30 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
 
     }
 
+    private boolean authenticateUser(int numOfLetters){
+        //Get data from table by number of letters
+        List<Data> data = dataController.getDataByLetterNumber(numOfLetters);
+
+        Log.i("LIST_DATA_SIZE",Integer.toString(data.size()));
+        
+        /*
+        List<Data> dataDB = dataController.getDataByLetterNumber(3);
+
+        for (Data a:dataDB
+                ) {
+            Log.i("DATA_DATABASE_NUMBER", Integer.toString(a.getNumOfLetters()));
+            Log.i("DATA_DATABAS_NUMBER",a.getDiffPr2Pr1());
+            Log.i("DATA_DATABASE",a.getDiffPr2Re1());
+            Log.i("DATA_DATABASE",a.getDiffPr2Pr1());
+            Log.i("DATA_DATABASE",a.getPeriod());
+        }
+        */
+
+        return true;
+    }
+    private void sendMail(String emailAddress){
+
+    }
 
         }
 
