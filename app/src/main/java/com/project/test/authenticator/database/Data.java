@@ -19,29 +19,55 @@ public class Data extends BaseModel{
             UUID id;
 
     @Column
-    String dataArray;
+    String diffPr2Pr1;
+
+    @Column
+    String diffPr2Re1;
+
+    @Column
+    String diffRe2Re1;
+
+    @Column
+    String period;
+
 
     @Column
     int numOfLetters;
 
 
-    public Data(UUID id, String dataArray, int numOfLetters) {
-        this.id = id;
-        this.dataArray = dataArray;
-        this.numOfLetters = numOfLetters;
-    }
 
 
     public Data(){
 
     }
 
+    public Data(UUID id, String diffPr2Pr1, String diffPr2Re1, String diffRe2Re1, String period, int numOfLetters) {
+        this.id = id;
+        this.diffPr2Pr1 = diffPr2Pr1;
+        this.diffPr2Re1 = diffPr2Re1;
+        this.diffRe2Re1 = diffRe2Re1;
+        this.period = period;
+        this.numOfLetters = numOfLetters;
+    }
+
     public UUID getId() {
         return id;
     }
 
-    public String getDataArray() {
-        return dataArray;
+    public String getDiffPr2Pr1() {
+        return diffPr2Pr1;
+    }
+
+    public String getDiffPr2Re1() {
+        return diffPr2Re1;
+    }
+
+    public String getDiffRe2Re1() {
+        return diffRe2Re1;
+    }
+
+    public String getPeriod() {
+        return period;
     }
 
     public int getNumOfLetters() {

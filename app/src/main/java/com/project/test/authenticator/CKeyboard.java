@@ -1,5 +1,6 @@
 package com.project.test.authenticator;
 
+import android.content.Context;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.project.test.authenticator.database.Data;
@@ -31,7 +33,8 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
     List<Long> diffPr2re1 = new ArrayList<>();
     List<Long> diffRe2Re1 = new ArrayList<>();
     List<Long> period = new ArrayList<>();
-    List<Long> listData = new ArrayList<>();
+    int numOfLetters = 0;
+
 
     @Override
     public View onCreateInputView() {
@@ -43,8 +46,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
         kv.setKeyboard(keyboard);
         kv.setOnKeyboardActionListener(this);
         return kv;
-
-
+        
     }
 
     public CKeyboard() {
@@ -53,29 +55,24 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
 
     @Override
     public void onPress(int i) {
-        if (i != KeyEvent.KEYCODE_D && i != KeyEvent.KEYCODE_C) {
+
+        if (i != KeyEvent.KEYCODE_D && i != Keyboard.KEYCODE_DONE) {
             Long curretSystemTime = System.currentTimeMillis();
             press.add(curretSystemTime);
-
+            numOfLetters++;
             Log.i("Press event", "Current time: " + Long.toString(curretSystemTime));
-
-
 
         }
         else {
             Log.i("KEYCODE_ON_PRESS", "SPACE OR ENTER");
 
-
         }
 
     }
 
-
-
-
     @Override
     public void onRelease(int i) {
-        if (i != KeyEvent.KEYCODE_D && i != KeyEvent.KEYCODE_C) {
+        if (i != KeyEvent.KEYCODE_D && i != Keyboard.KEYCODE_DONE) {
             Long curretSystemTime = System.currentTimeMillis();
             release.add(curretSystemTime);
 
@@ -84,10 +81,23 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
 
         }else {
             Log.i("KEYCODE_ON_RELEASE", "SPACE OR ENTER");
-            fillDataListWithData();
-            Data data = new Data(UUID.randomUUID(), listData.toString(), listData.size());
-            data.save();
+
+            if (numOfLetters >= 2) {
+                for (int b = 1;b<numOfLetters;b++ ){
+                    diffPr2Pr1.add(press.get(b)-press.get(b-1));
+                    diffPr2re1.add(press.get(b)-release.get(b-1));
+                    diffRe2Re1.add(release.get(b)-release.get(b-1));
+                    period.add(release.get(b-1)-press.get(b-1));
+                }
+                //Save to database if spacebar or done is pressed
+                Data data = new Data(UUID.randomUUID(), diffPr2Pr1.toString(), diffPr2re1.toString(), diffPr2Pr1.toString(), period.toString(), press.size());
+                data.save();
+            }
+
             cleanLists();
+            numOfLetters = 0;
+
+            //Logs
             List<Data> dataDB = SQLite.select()
                     .from(Data.class)
 
@@ -96,13 +106,14 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
             for (Data a:dataDB
                  ) {
                 Log.i("DATA_DATABASE_NUMBER", Integer.toString(a.getNumOfLetters()));
-                Log.i("DATA_DATABASE", a.getDataArray());
+                Log.i("DATA_DATABAS_NUMBER",a.getDiffPr2Pr1());
+                Log.i("DATA_DATABASE",a.getDiffPr2Re1());
+                Log.i("DATA_DATABASE",a.getDiffPr2Pr1());
+                Log.i("DATA_DATABASE",a.getPeriod());
             }
 
         }
     }
-
-
 
     @Override
     public void onKey(int i, int[] ints) {
@@ -120,7 +131,10 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
                 kv.invalidateAllKeys();
                 break;
             case Keyboard.KEYCODE_DONE:
+                kv.closing();
+                requestHideSelf(0);
                 ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+
                 break;
 
 
@@ -188,16 +202,9 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
         diffPr2re1.clear();
         diffRe2Re1.clear();
         period.clear();
-        listData.clear();
+
     }
 
-    private void fillDataListWithData() {
-        listData.addAll(press);
-        listData.addAll(release);
-        listData.addAll(diffPr2Pr1);
-        listData.addAll(diffPr2re1);
-        listData.addAll(diffRe2Re1);
-        listData.addAll(period);
-    }
-}
+
+        }
 
