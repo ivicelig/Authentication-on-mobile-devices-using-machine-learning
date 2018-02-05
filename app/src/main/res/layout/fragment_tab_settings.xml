@@ -2,27 +2,91 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.project.test.authenticator.tabs.tabSettings">
+    tools:context="com.project.test.authenticator.tabs.tabSettings"
+    android:id="@+id/relativeLayout">
 
     <!-- TODO: Update blank fragment layout -->
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/numAllowedErrors"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_above="@+id/text_View2"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="19dp"
         android:ems="10"
         android:inputType="textPersonName" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/text_View1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/editText"
+        android:layout_alignStart="@+id/text_View2"
         android:layout_marginTop="20dp"
-        android:text="TrainBox" />
+        android:text="@string/numAllowedErrors" />
+
+    <EditText
+        android:id="@+id/minDataTrainingRecords"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/text_View3"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="21dp"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/text_View2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/minDataTrainingRecords"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="13dp"
+        android:text="@string/minDataTrainingRecords" />
+
+    <EditText
+        android:id="@+id/email_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/text_View3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/email_address"
+        android:layout_alignParentStart="true"
+        android:text="@string/email_address" />
+
+    <EditText
+        android:id="@+id/standardDeviationMultiplier"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_update"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="15dp"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/text_View4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/standardDeviationMultiplier"
+        android:layout_alignParentStart="true"
+        android:text="@string/standardDeviationMultiplier" />
+
+    <Button
+        android:id="@+id/button_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="68dp"
+        android:layout_toEndOf="@+id/text_View3"
+        android:text="Update settings" />
 
 </RelativeLayout>

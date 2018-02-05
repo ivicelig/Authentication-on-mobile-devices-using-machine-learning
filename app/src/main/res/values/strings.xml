@@ -3,4 +3,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="email_address">Email address:</string>
+    <string name="numAllowedErrors">Number of allowed errors:</string>
+    <string name="minDataTrainingRecords">Minimal amount of training data:</string>
+    <string name="standardDeviationMultiplier">Standard deviation multiplier:</string>
 </resources>
