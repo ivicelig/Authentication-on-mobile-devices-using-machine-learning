@@ -4,6 +4,7 @@ package com.project.test.authenticator.tabs;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,11 +53,14 @@ public class tabSettings extends Fragment {
                 double standardDeviationMultiplier_update;
 
                 email_address_update = email_address.getText().toString();
-                if (tryParseInt(minDataTrainingRecord.getText().toString()) && tryParseInt(numAllowedErrors.getText().toString()) && tryParseInt(standardDeviationMultiplier.getText().toString())){
+                if (tryParseInt(minDataTrainingRecord.getText().toString()) && tryParseInt(numAllowedErrors.getText().toString()) && tryParseDouble(standardDeviationMultiplier.getText().toString())){
                     minDataTrainingRecord_update = Integer.parseInt(minDataTrainingRecord.getText().toString());
                     numAllowedErrors_update = Integer.parseInt(numAllowedErrors.getText().toString());
                     standardDeviationMultiplier_update = Double.parseDouble(standardDeviationMultiplier.getText().toString());
                     sc.updateTable(numAllowedErrors_update,minDataTrainingRecord_update,email_address_update,standardDeviationMultiplier_update);
+                    Log.i("UPDATE","UPDATE SUCCESS");
+                }else {
+                    Log.i("UPDATE","UPDATE FAIL");
                 }
 
 

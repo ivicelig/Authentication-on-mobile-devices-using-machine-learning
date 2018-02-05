@@ -29,5 +29,6 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     implementation "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
     implementation "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+    implementation 'com.jjoe64:graphview:4.2.1'
 
 }

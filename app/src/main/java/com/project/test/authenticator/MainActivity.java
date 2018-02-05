@@ -19,8 +19,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         FlowManager.init(this);
+        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         //Setting toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

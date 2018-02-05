@@ -42,14 +42,11 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
     int numOfLetters = 0;
     int failedAuthentications = 0;
 
-    int numAllowedErrors = 4;
-    int minDataTrainingRecords = 2;
-    String emailAddress = "ivicelig@gmail.com";
-    double standardDeviationMultiplyer = 3;
+
 
     DataController dataController = new DataController();
     SettingsController sc = new SettingsController();
-    List<Settings> settings = sc.getAllData();
+
     @Override
     public View onCreateInputView() {
 
@@ -86,6 +83,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
 
     @Override
     public void onRelease(int i) {
+        List<Settings> settings = sc.getAllData();
         if (i != KeyEvent.KEYCODE_D && i != Keyboard.KEYCODE_DONE) {
             Long curretSystemTime = System.currentTimeMillis();
             release.add(curretSystemTime);
@@ -118,6 +116,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
                         Log.i("SETTINGS",Double.toString(settings.get(0).getNumAllowedErrors()));
                         sendMail(settings.get(0).getEmailAddress());
                         Toast.makeText(this,"Niste pravi korisnik!",Toast.LENGTH_SHORT);
+
                         Log.i("PRAVI","NISTE PRAVI KORISNIK!");
                         failedAuthentications = 0;
                     }
@@ -221,6 +220,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
     }
 
     private boolean authenticateUser(int numOfLetters){
+        List<Settings> settings = sc.getAllData();
         //Get data from table by number of letters
         List<Data> dataDB = dataController.getDataByLetterNumber(3);
 
