@@ -19,6 +19,7 @@ import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.Vector;
@@ -38,6 +39,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
     int numOfLetters = 0;
     int failedAuthentications = 0;
     int numAllowedErrors = 4;
+    int minDataTrainingRecords = 2;
     String emailAddress = "ivicelig@gmail.com";
 
     DataController dataController = new DataController();
@@ -92,7 +94,10 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
                     diffPr2Pr1.add(press.get(b)-press.get(b-1));
                     diffPr2re1.add(press.get(b)-release.get(b-1));
                     diffRe2Re1.add(release.get(b)-release.get(b-1));
-                    period.add(release.get(b-1)-press.get(b-1));
+
+                }
+                for (int c = 0;c<numOfLetters;c++){
+                    period.add(release.get(c)-press.get(c));
                 }
                 //Authenticate user
                 if (authenticateUser(numOfLetters)) {
@@ -210,8 +215,63 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
         //Get data from table by number of letters
         List<Data> data = dataController.getDataByLetterNumber(numOfLetters);
 
-        Log.i("LIST_DATA_SIZE",Integer.toString(data.size()));
-        
+        if (data.size()>minDataTrainingRecords){
+            List<Long> dataMean = new ArrayList<>(Collections.nCopies(4*numOfLetters-3,0L));
+
+
+
+            //Calculate mean of data in data table by columns
+            for (Data row:data) {
+                List<Long> tranformedData = transFormDataStringInLongArray(row.getDiffPr2Pr1(),row.getDiffPr2Re1(),row.getDiffRe2Re1(),row.getPeriod());
+                for (int i = 0;i<tranformedData.size();i++){
+                    Long sum = dataMean.get(i)+tranformedData.get(i);
+                    dataMean.set(i,sum);
+                }
+            }
+            for (int i = 0;i<dataMean.size();i++){
+                dataMean.set(i,dataMean.get(i)/data.size());
+            }
+            Log.i("DATA_MEAN",dataMean.toString());
+            return true;
+        }
+        //If there isn't any record in table data for some letter number attribute, then return true so that system trains itself
+        else return true;
+
+
+    }
+    private void sendMail(String emailAddress){
+
+    }
+
+    private List<Long> transFormDataStringInLongArray(String diffPr2Pr1,String diffPr2Re1,String diffRe2Re1, String period){
+        List<Long> longData = new ArrayList<>();
+
+        String listPr2Pr1[] = diffPr2Pr1.replace("[","").replace("]","").split(", ");
+        String listPr2Re1[] = diffPr2Re1.replace("[","").replace("]","").split(", ");
+        String listRe2Re1[] = diffRe2Re1.replace("[","").replace("]","").split(", ");
+        String listPeriod[] = period.replace("[","").replace("]","").split(", ");
+
+        for (String value:listPr2Pr1) {
+            Log.i("","");
+            longData.add(Long.parseLong(value));
+        }
+        for (String value:listPr2Re1) {
+            longData.add(Long.parseLong(value));
+        }
+        for (String value:listRe2Re1) {
+            longData.add(Long.parseLong(value));
+        }
+        for (String value:listPeriod) {
+            longData.add(Long.parseLong(value));
+        }
+
+        return longData;
+    }
+
+}
+
+
+
         /*
         List<Data> dataDB = dataController.getDataByLetterNumber(3);
 
@@ -224,12 +284,3 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
             Log.i("DATA_DATABASE",a.getPeriod());
         }
         */
-
-        return true;
-    }
-    private void sendMail(String emailAddress){
-
-    }
-
-        }
-
