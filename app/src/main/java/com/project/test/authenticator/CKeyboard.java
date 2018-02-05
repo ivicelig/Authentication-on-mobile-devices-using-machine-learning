@@ -95,6 +95,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
             Log.i("KEYCODE_ON_RELEASE", "SPACE OR ENTER");
 
             if (numOfLetters >= 2 && numOfLetters <= 21) {
+                Log.i("TEST","TST");
                 //Data previously entered by user
                 for (int b = 1;b<numOfLetters;b++ ){
                     diffPr2Pr1.add(press.get(b)-press.get(b-1));
@@ -107,15 +108,28 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
                 }
                 //Authenticate user
                 if (authenticateUser(numOfLetters)) {
+                    Log.i("TEST","TST");
                     //Save to database if spacebar or done is pressed and if user is authenticated
                     dataController.saveToTable(diffPr2Pr1, diffPr2re1, diffRe2Re1, period, numOfLetters);
+
+                    List<Data> dataDB = dataController.getDataByLetterNumber(6);
+
+                    for (Data a:dataDB
+                            ) {
+                        Log.i("DATA_DATABASE_NUMBER", Integer.toString(a.getNumOfLetters()));
+                        Log.i("DATA_DATABAS_NUMBER",a.getDiffPr2Pr1());
+                        Log.i("DATA_DATABASE",a.getDiffPr2Re1());
+                        Log.i("DATA_DATABASE",a.getDiffPr2Pr1());
+                        Log.i("DATA_DATABASE",a.getPeriod());
+                    }
+
                     failedAuthentications = 0;
                 }else {
                     if (++failedAuthentications >= settings.get(0).getNumAllowedErrors() ){
                         //Send mail with logs
                         Log.i("SETTINGS",Double.toString(settings.get(0).getNumAllowedErrors()));
                         sendMail(settings.get(0).getEmailAddress());
-                        Toast.makeText(this,"Niste pravi korisnik!",Toast.LENGTH_SHORT);
+                        Toast.makeText(this,"Niste pravi korisnik!",Toast.LENGTH_SHORT).show();
 
                         Log.i("PRAVI","NISTE PRAVI KORISNIK!");
                         failedAuthentications = 0;
@@ -267,6 +281,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
             for (int i = 0;i<standardDeviations.size();i++){
                 standardDeviations.set(i,(long)Math.sqrt(standardDeviations.get(i)/data.size()));
             }
+            Log.i("VALUE",standardDeviations.toString());
 
             //Calculate number of values that go into certain range of x * standard deviation and decide whether user is legitimate or not
             List<Long> tranformedData = transFormDataStringInLongArray(diffPr2Pr1.toString(),diffPr2re1.toString(),diffRe2Re1.toString(),period.toString());
@@ -275,15 +290,12 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
                 double max = (double)dataMean.get(i) + ((double)standardDeviations.get(i)*settings.get(0).getStandardDeviationMultiplyer());
                 double min = (double)dataMean.get(i) - ((double)standardDeviations.get(i)*settings.get(0).getStandardDeviationMultiplyer());
                 if (tranformedData.get(i)>=min && tranformedData.get(i)<=max){
-                    numberOfHits = numberOfHits + 0.8;
-                    Log.i("MIN",Double.toString(max));
-                    Log.i("MAX",Double.toString(min));
-                    Log.i("TRANDFORMED",tranformedData.toString());
-                    Log.i("VALUE",tranformedData.get(i).toString());
+                    numberOfHits = numberOfHits + 1.0;
+
                 }
 
                 if(tranformedData.get(i)<=min && tranformedData.get(i)>=max &&tranformedData.get(i)>=2*min && tranformedData.get(i)<= 2*max){
-                    numberOfHits = numberOfHits + 0.2;
+                    numberOfHits = numberOfHits + 0.0;
                 }
 
             }
@@ -293,9 +305,10 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
 
 
             Log.i("DATA_MEAN",dataMean.toString());
-            Log.i("DATA_MEAN",standardDeviations.toString());
-            Log.i("DATA_MEAN",Integer.toString(dataDB.size()));
+            Log.i("STANDARD_DEVIATION",standardDeviations.toString());
+            Log.i("SIZE",Integer.toString(dataDB.size()));
             Log.i("HITS",Double.toString(numberOfHitsPercentage));
+            Toast.makeText(this,Double.toString(numberOfHitsPercentage),Toast.LENGTH_SHORT).show();
             if (numberOfHitsPercentage>=0.40){
                 return true;
             }else {

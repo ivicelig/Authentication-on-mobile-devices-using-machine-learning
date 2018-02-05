@@ -3,11 +3,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.project.test.authenticator.tabs.tabSummary">
-
-    <!-- TODO: Update blank fragment layout -->
-    <com.jjoe64.graphview.GraphView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dip"
-        android:id="@+id/graph" />
+        android:layout_height="match_parent">
+        <LinearLayout android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_width="match_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/diffP2P1" />
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/graph1"
+                android:layout_width="match_parent"
+                android:layout_height="200dip"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/graph" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/diffP2R1" />
+
+            <com.jjoe64.graphview.GraphView
+            android:id="@+id/graph2"
+            android:layout_width="match_parent"
+            android:layout_height="200dip"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/graph" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/diffR2R1" />
+
+            <com.jjoe64.graphview.GraphView
+            android:id="@+id/graph3"
+            android:layout_width="match_parent"
+            android:layout_height="200dip"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/graph" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/period" />
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/graph4"
+                android:layout_width="match_parent"
+                android:layout_height="200dip"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/graph" />
+        </LinearLayout>>
+
+    </ScrollView>
+
 
 </RelativeLayout>

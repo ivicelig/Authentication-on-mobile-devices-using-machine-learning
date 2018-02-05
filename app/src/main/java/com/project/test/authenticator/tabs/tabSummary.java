@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -39,27 +41,101 @@ public class tabSummary extends Fragment {
         DataController dataController = new DataController();
         View view =  inflater.inflate(R.layout.fragment_tab_summary, container, false);
 
-        List<Data> data = dataController.getDataByLetterNumber(3);
+        List<Data> data = dataController.getDataByLetterNumber(6);
+        if (data.size()>0) {
+            //Create graph diagram
 
-        //Create graph diagram
-        GraphView graph = (GraphView)view.findViewById(R.id.graph);
-        graph.getViewport().setXAxisBoundsManual(true);
-        graph.getViewport().setMinX(0);
-        graph.getViewport().setMaxX(600);
-
-        graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
-
-
-       drawDataOnGraph(graph,data);
-
-        //drawDataOnGraph2(graph,data);
-        //drawDataOnGraph3(graph,data);
-        //drawDataOnGraph4(graph,data);
+            GraphView graph1 = (GraphView) view.findViewById(R.id.graph1);
+            graph1.getViewport().setXAxisBoundsManual(true);
+            graph1.getViewport().setMinX(0);
+            graph1.getViewport().setMaxX(600);
+            graph1.getViewport().setScalable(true); // enables horizontal zooming and scrolling
 
 
+            GraphView graph2 = (GraphView) view.findViewById(R.id.graph2);
+            graph2.getViewport().setXAxisBoundsManual(true);
+            graph2.getViewport().setMinX(0);
+            graph2.getViewport().setMaxX(600);
+            graph2.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+
+
+            GraphView graph3 = (GraphView) view.findViewById(R.id.graph3);
+            graph3.getViewport().setXAxisBoundsManual(true);
+            graph3.getViewport().setMinX(0);
+            graph3.getViewport().setMaxX(600);
+            graph3.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+
+
+            GraphView graph4 = (GraphView) view.findViewById(R.id.graph4);
+            graph4.getViewport().setXAxisBoundsManual(true);
+            graph4.getViewport().setMinX(0);
+            graph4.getViewport().setMaxX(600);
+            graph4.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+
+
+            drawDataOnGraph(graph1, data);
+            drawDataOnGraph2(graph2,data);
+            drawDataOnGraph3(graph3,data);
+            drawDataOnGraph4(graph4,data);
+
+        }
 
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser){
+            DataController dataController = new DataController();
+            List<Data> data = dataController.getDataByLetterNumber(6);
+            if (data.size()>0) {
+                //Create graph diagram
+
+                GraphView graph1 = (GraphView) getView().findViewById(R.id.graph1);
+                graph1.getViewport().setXAxisBoundsManual(true);
+                graph1.getViewport().setMinX(-5000);
+                graph1.getViewport().setMaxX(5000);
+                graph1.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+
+
+                GraphView graph2 = (GraphView) getView().findViewById(R.id.graph2);
+                graph2.getViewport().setXAxisBoundsManual(true);
+                graph2.getViewport().setMinX(0);
+                graph2.getViewport().setMaxX(600);
+                graph2.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+
+
+                GraphView graph3 = (GraphView) getView().findViewById(R.id.graph3);
+                graph3.getViewport().setXAxisBoundsManual(true);
+                graph3.getViewport().setMinX(0);
+                graph3.getViewport().setMaxX(600);
+                graph3.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+
+
+                GraphView graph4 = (GraphView) getView().findViewById(R.id.graph4);
+                graph4.getViewport().setXAxisBoundsManual(true);
+                graph4.getViewport().setMinX(0);
+                graph4.getViewport().setMaxX(600);
+                graph4.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+
+
+                drawDataOnGraph(graph1, data);
+                drawDataOnGraph2(graph2,data);
+                drawDataOnGraph3(graph3,data);
+                drawDataOnGraph4(graph4,data);
+
+            }
+    }
+        else
+            Log.d("MyFragment", "Fragment is not visible.");
+    }
+
     private List<Long> tranformInputInLongList(String input){
 
         List<Long>tranformedString = new ArrayList<>();

@@ -6,5 +6,10 @@
     <string name="email_address">Email address:</string>
     <string name="numAllowedErrors">Number of allowed errors:</string>
     <string name="minDataTrainingRecords">Minimal amount of training data:</string>
+    <string name="diffP2P1">Graph difference press 2 and press 1:</string>
+    <string name="diffP2R1">Graph difference press 2 and release 1:</string>
+    <string name="diffR2R1">Difference between release 2 and release 1:</string>
     <string name="standardDeviationMultiplier">Standard deviation multiplier:</string>
+    <string name="period">Period of button press(release - press):</string>
+
 </resources>
