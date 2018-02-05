@@ -5,14 +5,22 @@
     tools:context="com.project.test.authenticator.tabs.tabHome">
 
 
-    <ToggleButton
-        android:id="@+id/toogleButton"
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:checked="true"
-        android:text="Start/Stop"
-        android:textOff="Stop"
-        android:textOn="Start" />
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/editText"
+        android:layout_marginTop="20dp"
+        android:text="TrainBox" />
 </RelativeLayout>

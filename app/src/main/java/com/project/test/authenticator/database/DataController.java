@@ -33,8 +33,11 @@ public class DataController {
     }
 
     public void saveToTable(List<Long>diffPr2Pr1,List<Long>diffPr2re1, List<Long>diffRe2Re1,List<Long>period,int numOfLetters){
-        Data data = new Data(UUID.randomUUID(), diffPr2Pr1.toString(), diffPr2re1.toString(), diffRe2Re1.toString(), period.toString(), numOfLetters);
-        data.save();
+        if(diffPr2Pr1.toString() != "[]" && diffPr2re1.toString()!="[]" && diffRe2Re1.toString()!="[]") {
+
+            Data data = new Data(UUID.randomUUID(), diffPr2Pr1.toString(), diffPr2re1.toString(), diffRe2Re1.toString(), period.toString(), numOfLetters);
+            data.save();
+        }
     }
 
 }

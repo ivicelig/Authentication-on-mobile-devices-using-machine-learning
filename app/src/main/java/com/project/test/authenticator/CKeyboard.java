@@ -5,6 +5,7 @@ import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.media.AudioManager;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -15,6 +16,8 @@ import android.widget.Toast;
 import com.project.test.authenticator.database.Data;
 
 import com.project.test.authenticator.database.DataController;
+import com.project.test.authenticator.database.Settings;
+import com.project.test.authenticator.database.SettingsController;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
@@ -38,11 +41,15 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
 
     int numOfLetters = 0;
     int failedAuthentications = 0;
+
     int numAllowedErrors = 4;
     int minDataTrainingRecords = 2;
     String emailAddress = "ivicelig@gmail.com";
+    double standardDeviationMultiplyer = 3;
 
     DataController dataController = new DataController();
+    SettingsController sc = new SettingsController();
+    List<Settings> settings = sc.getAllData();
     @Override
     public View onCreateInputView() {
 
@@ -90,6 +97,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
             Log.i("KEYCODE_ON_RELEASE", "SPACE OR ENTER");
 
             if (numOfLetters >= 2 && numOfLetters <= 21) {
+                //Data previously entered by user
                 for (int b = 1;b<numOfLetters;b++ ){
                     diffPr2Pr1.add(press.get(b)-press.get(b-1));
                     diffPr2re1.add(press.get(b)-release.get(b-1));
@@ -105,10 +113,12 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
                     dataController.saveToTable(diffPr2Pr1, diffPr2re1, diffRe2Re1, period, numOfLetters);
                     failedAuthentications = 0;
                 }else {
-                    if (++failedAuthentications >= numAllowedErrors){
+                    if (++failedAuthentications >= settings.get(0).getNumAllowedErrors() ){
                         //Send mail with logs
-                        sendMail(emailAddress);
-
+                        Log.i("SETTINGS",Double.toString(settings.get(0).getNumAllowedErrors()));
+                        sendMail(settings.get(0).getEmailAddress());
+                        Toast.makeText(this,"Niste pravi korisnik!",Toast.LENGTH_SHORT);
+                        Log.i("PRAVI","NISTE PRAVI KORISNIK!");
                         failedAuthentications = 0;
                     }
 
@@ -144,7 +154,6 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
                 ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
 
                 break;
-
 
             default:
                 char code = (char)i;
@@ -213,10 +222,22 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
 
     private boolean authenticateUser(int numOfLetters){
         //Get data from table by number of letters
+        List<Data> dataDB = dataController.getDataByLetterNumber(3);
+
+        for (Data a:dataDB
+                ) {
+            Log.i("DATA_DATABASE_NUMBER", Integer.toString(a.getNumOfLetters()));
+            Log.i("DATA_DATABAS_NUMBER",a.getDiffPr2Pr1());
+            Log.i("DATA_DATABASE",a.getDiffPr2Re1());
+            Log.i("DATA_DATABASE",a.getDiffPr2Pr1());
+            Log.i("DATA_DATABASE",a.getPeriod());
+        }
         List<Data> data = dataController.getDataByLetterNumber(numOfLetters);
 
-        if (data.size()>minDataTrainingRecords){
+        if (data.size()>settings.get(0).getMinDataTrainingRecords()){
             List<Long> dataMean = new ArrayList<>(Collections.nCopies(4*numOfLetters-3,0L));
+            List<Long> standardDeviations = new ArrayList<>(Collections.nCopies(4*numOfLetters-3,0L));
+            //List<Boolean> valueHitXStandardDeviation = new ArrayList<>();
 
 
 
@@ -231,8 +252,55 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
             for (int i = 0;i<dataMean.size();i++){
                 dataMean.set(i,dataMean.get(i)/data.size());
             }
+
+            //Calculate values of standard deviation of new data that user previously entered (test data)
+            for (Data row:data) {
+                List<Long> tranformedData = transFormDataStringInLongArray(row.getDiffPr2Pr1(),row.getDiffPr2Re1(),row.getDiffRe2Re1(),row.getPeriod());
+
+
+                for (int i = 0;i<tranformedData.size();i++){
+                    double rez = Math.pow(tranformedData.get(i).doubleValue()-dataMean.get(i).doubleValue(),2);
+                    long sum = standardDeviations.get(i) + (long)rez;
+                    standardDeviations.set(i,sum);
+                }
+            }
+            for (int i = 0;i<standardDeviations.size();i++){
+                standardDeviations.set(i,(long)Math.sqrt(standardDeviations.get(i)/data.size()));
+            }
+
+            //Calculate number of values that go into certain range of x * standard deviation and decide whether user is legitimate or not
+            List<Long> tranformedData = transFormDataStringInLongArray(diffPr2Pr1.toString(),diffPr2re1.toString(),diffRe2Re1.toString(),period.toString());
+            double numberOfHits= 0;
+            for (int i = 0;i<tranformedData.size();i++){
+                double max = (double)dataMean.get(i) + ((double)standardDeviations.get(i)*settings.get(0).getStandardDeviationMultiplyer());
+                double min = (double)dataMean.get(i) - ((double)standardDeviations.get(i)*settings.get(0).getStandardDeviationMultiplyer());
+                if (tranformedData.get(i)>=min && tranformedData.get(i)<=max){
+                    numberOfHits = numberOfHits + 0.8;
+                    Log.i("MIN",Double.toString(max));
+                    Log.i("MAX",Double.toString(min));
+                    Log.i("TRANDFORMED",tranformedData.toString());
+                    Log.i("VALUE",tranformedData.get(i).toString());
+                }
+
+                if(tranformedData.get(i)<=min && tranformedData.get(i)>=max &&tranformedData.get(i)>=2*min && tranformedData.get(i)<= 2*max){
+                    numberOfHits = numberOfHits + 0.2;
+                }
+
+            }
+            double numberOfHitsPercentage = numberOfHits / (double)tranformedData.size();
+
+
+
+
             Log.i("DATA_MEAN",dataMean.toString());
-            return true;
+            Log.i("DATA_MEAN",standardDeviations.toString());
+            Log.i("DATA_MEAN",Integer.toString(dataDB.size()));
+            Log.i("HITS",Double.toString(numberOfHitsPercentage));
+            if (numberOfHitsPercentage>=0.40){
+                return true;
+            }else {
+                return false;
+            }
         }
         //If there isn't any record in table data for some letter number attribute, then return true so that system trains itself
         else return true;

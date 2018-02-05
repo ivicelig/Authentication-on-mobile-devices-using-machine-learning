@@ -10,12 +10,17 @@ import android.support.design.widget.TabLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.project.test.authenticator.database.Settings;
+import com.project.test.authenticator.database.SettingsController;
+import com.raizlabs.android.dbflow.config.FlowManager;
+
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FlowManager.init(this);
         setContentView(R.layout.activity_main);
         //Setting toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -48,8 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        SettingsController sc = new SettingsController();
+        sc.saveToTable(4,4,"ivicelig@gmail.com",2.0);
         ActionBar actionBar = getSupportActionBar();
+
 
     }
 
