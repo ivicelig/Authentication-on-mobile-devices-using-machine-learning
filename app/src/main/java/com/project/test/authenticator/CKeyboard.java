@@ -116,11 +116,7 @@ public class CKeyboard extends InputMethodService implements KeyboardView.OnKeyb
 
                     for (Data a:dataDB
                             ) {
-                        Log.i("DATA_DATABASE_NUMBER", Integer.toString(a.getNumOfLetters()));
-                        Log.i("DATA_DATABAS_NUMBER",a.getDiffPr2Pr1());
-                        Log.i("DATA_DATABASE",a.getDiffPr2Re1());
-                        Log.i("DATA_DATABASE",a.getDiffPr2Pr1());
-                        Log.i("DATA_DATABASE",a.getPeriod());
+                        Log.i("TEST",a.toString());
                     }
 
                     failedAuthentications = 0;

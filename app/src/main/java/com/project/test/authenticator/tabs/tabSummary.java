@@ -47,28 +47,28 @@ public class tabSummary extends Fragment {
 
             GraphView graph1 = (GraphView) view.findViewById(R.id.graph1);
             graph1.getViewport().setXAxisBoundsManual(true);
-            graph1.getViewport().setMinX(0);
+            graph1.getViewport().setMinX(-600);
             graph1.getViewport().setMaxX(600);
             graph1.getViewport().setScalable(true); // enables horizontal zooming and scrolling
 
 
             GraphView graph2 = (GraphView) view.findViewById(R.id.graph2);
             graph2.getViewport().setXAxisBoundsManual(true);
-            graph2.getViewport().setMinX(0);
+            graph2.getViewport().setMinX(-600);
             graph2.getViewport().setMaxX(600);
             graph2.getViewport().setScalable(true); // enables horizontal zooming and scrolling
 
 
             GraphView graph3 = (GraphView) view.findViewById(R.id.graph3);
             graph3.getViewport().setXAxisBoundsManual(true);
-            graph3.getViewport().setMinX(0);
+            graph3.getViewport().setMinX(-600);
             graph3.getViewport().setMaxX(600);
             graph3.getViewport().setScalable(true); // enables horizontal zooming and scrolling
 
 
             GraphView graph4 = (GraphView) view.findViewById(R.id.graph4);
             graph4.getViewport().setXAxisBoundsManual(true);
-            graph4.getViewport().setMinX(0);
+            graph4.getViewport().setMinX(-600);
             graph4.getViewport().setMaxX(600);
             graph4.getViewport().setScalable(true); // enables horizontal zooming and scrolling
 
@@ -98,29 +98,33 @@ public class tabSummary extends Fragment {
                 //Create graph diagram
 
                 GraphView graph1 = (GraphView) getView().findViewById(R.id.graph1);
+                graph1.removeAllSeries();
                 graph1.getViewport().setXAxisBoundsManual(true);
-                graph1.getViewport().setMinX(-5000);
-                graph1.getViewport().setMaxX(5000);
+                graph1.getViewport().setMinX(-600);
+                graph1.getViewport().setMaxX(600);
                 graph1.getViewport().setScalable(true); // enables horizontal zooming and scrolling
 
 
                 GraphView graph2 = (GraphView) getView().findViewById(R.id.graph2);
+                graph2.removeAllSeries();
                 graph2.getViewport().setXAxisBoundsManual(true);
-                graph2.getViewport().setMinX(0);
+                graph2.getViewport().setMinX(-600);
                 graph2.getViewport().setMaxX(600);
                 graph2.getViewport().setScalable(true); // enables horizontal zooming and scrolling
 
 
                 GraphView graph3 = (GraphView) getView().findViewById(R.id.graph3);
+                graph3.removeAllSeries();
                 graph3.getViewport().setXAxisBoundsManual(true);
-                graph3.getViewport().setMinX(0);
+                graph3.getViewport().setMinX(-600);
                 graph3.getViewport().setMaxX(600);
                 graph3.getViewport().setScalable(true); // enables horizontal zooming and scrolling
 
 
                 GraphView graph4 = (GraphView) getView().findViewById(R.id.graph4);
+                graph4.removeAllSeries();
                 graph4.getViewport().setXAxisBoundsManual(true);
-                graph4.getViewport().setMinX(0);
+                graph4.getViewport().setMinX(-600);
                 graph4.getViewport().setMaxX(600);
                 graph4.getViewport().setScalable(true); // enables horizontal zooming and scrolling
 
